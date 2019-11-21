@@ -19,12 +19,21 @@ while True:
     print("Magnetic: ", accel_mag["magnetic"])
     if(magnetic[0] != 0):
         magNorth = degrees(atan(magnetic[1]/magnetic[0]))
+        if(magnetic[0] < 0):
+            magNorth += 180
+        if(magNorth < 0):
+            magNorth += 360
     else:
         if(magnetic[1] < 0):
-            magNorth = -90
+            magNorth = 270
         else:
             magNorth = 90
+
     trueNorth = magNorth + magDec
+    if(trueNorth < 0):
+        trueNorth += 360
+    elif(trueNorth > 360):
+        trueNorth -= 360
     print("Magnetic North Angle from +X", magNorth)
     print("True North Angle from +X", trueNorth)
     print("\n\n")
