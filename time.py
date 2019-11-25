@@ -1,9 +1,4 @@
 from datetime import datetime
-#from astropy.time import Time
-
-
-
-print(datetime.now())
 
 def julianDate():
     now = datetime.utcnow()
@@ -18,18 +13,14 @@ def julianDate():
     c = 2-a+b
     e = int(365.25*(year +4716))
     f = (int)(30.6001 * (month +1))
-    return c+day+e+f- 1524.5 + now.hour / 24 + (now.minute / (24 * 60)) + (now.second / (24 * 60 *60))
+    return c+day+e+f- 1524.5
 
 def GreenwichMeanSiderialTime():
     d = julianDate() - 2451545.0    #Days since 2000 Jan. 1 12H UT1
     T = d / 36525.0;                #Centuries since 2000 Jan. 1 12H UT1
-    temp = 24110.54841 + (8640184.812866 * T) + (.093104 * T**2) - (.0000062 * (T **3))
     now = datetime.utcnow()
-    UT = now.hour * 3600 + now.minute * 60 + now.second     #in seconds
-    temp += (1.00273790935 + .000000000059 * T) * UT
-    temp = temp % 86400
-    return temp / 3600
-
+    GMST = 6.697374558 + .06570982441908 * d + 1.00273790935 * (now.hour + (now.minute/60) + (now.second/3600)) + .000026 * (T**2)
+    return GMST - ((GMST // 24) * 24)
 
 def getSiderealTime():
     gst = GreenwichMeanSiderialTime()
@@ -39,8 +30,4 @@ def getSiderealTime():
     siderialSecond = int( (remainder - siderialMinute) * 60)
     return (siderealHour, siderialMinute, siderialSecond)
 
-print("Julian Date according to my code: ", julianDate())
-#print("Julian Date according to astroPy: ", Time.now().jd)
-
-print("Sidereal Time according to my code: ", getSiderealTime())
-#print("Sidereal Time according to astroPy: ", Time.now().sidereal_time('mean'))
+print(getSiderealTime())
