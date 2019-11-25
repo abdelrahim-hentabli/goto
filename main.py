@@ -4,6 +4,8 @@ import geomag as gm
 from time import sleep
 from math import atan, degrees
 
+
+
 magDec = gm.declination(33.975599,-117.326188)
 while True: 
     accel_mag = get_accel_mag()
