@@ -30,4 +30,14 @@ def getSiderealTime():
     siderialSecond = int( (remainder - siderialMinute) * 60)
     return (siderealHour, siderialMinute, siderialSecond)
 
-print(getSiderealTime())
+def getLocalSiderealTime(longitude):
+    gst = GreenwichMeanSiderialTime()
+    lst = (gst + longitude /15) % 24
+    siderealHour = int(lst)
+    remainder = (lst- siderealHour) * 60
+    siderialMinute = int(remainder)
+    siderialSecond = int( (remainder - siderialMinute) * 60)
+    return (siderealHour, siderialMinute, siderialSecond)
+
+
+print(getLocalSiderealTime(-117.323194))
