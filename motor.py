@@ -1,12 +1,13 @@
 from time import sleep
 import RPi.GPIO as GPIO
-from accel_mag
+from accel_mag import getNorthAngle
 
 _azimuth = 0
 #74236 halfsteps for 1 revolution
 
 _altitude = 90
 #4085 halfsteps for 1 revolution
+
 
 halfstep_seq = [
         [1,0,0,1],
@@ -18,22 +19,21 @@ halfstep_seq = [
         [0,0,1,1],
         [0,0,0,1]]
 
-def gotoAltAzimuth(alt, az): 
-    alt_pins = [7, 11, 13,15]
-    az_pins = [12, 16, 18, 22]
+def gotoAltAzimuth(alt, az):  
+    GPIO.setmode(GPIO.BCM)
+    alt_pins = [4, 17, 27, 22]
+    az_pins = [18, 23, 24, 25]
     global _altitude
     global _azimuth
-    GPIO.setmode(GPIO.BOARD)
     for pin in alt_pins:
         GPIO.setup(pin, GPIO.OUT)
         GPIO.output(pin, False)
     for pin in az_pins:
         GPIO.setup(pin, GPIO.OUT)
-        GPIO.output(pin, False)
-    
-    if alt < 0 or alt > 90:
-        print("You goofed")
-        return
+        GPIO.output(pin, False) 
+    #if alt < 0 or alt > 90:
+    #    print("You goofed")
+    #    return
     if alt < _altitude:
         alt_steps = int(round((4085 / 360) * (_altitude - alt)))
         alt_direction = 1
@@ -89,4 +89,19 @@ def gotoAltAzimuth(alt, az):
             j = len(halfstep_seq)-1
         az_steps-=1
     GPIO.cleanup()
+
+def calibrate(latitude, longitude):
+    global _azimuth
+    angle = getNorthAngle(latitude, longitude)
+    while abs(angle) > .3:
+        if angle > 180:
+            angle -= 360
+        goto = _azimuth + (angle / 2)
+        if (goto > 360):
+            goto -= 360
+        elif (goto < 0):
+            goto += 360
+        gotoAltAzimuth( latitude , goto) 
+        angle = getNorthAngle(latitude, longitude)
+    _azimuth = 0
 
